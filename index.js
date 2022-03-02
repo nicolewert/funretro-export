@@ -28,10 +28,8 @@ async function getBoardTitleAndColumns(url){
     return {boardTitle, columns}
 }
 
+async function processForFile(boardTitle, columns){
     let parsedText = boardTitle + '\n\n';
-
-    const columns = await page.$$('.easy-card-list');
-
     for (let i = 0; i < columns.length; i++) {
         const columnTitle = await columns[i].$eval('.column-header', (node) => node.innerText.trim());
 
