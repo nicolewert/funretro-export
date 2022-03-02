@@ -13,7 +13,7 @@ if (!url) {
     return {url, file}
 }
 
-async function run() {
+async function getBoardTitleAndColumns(url){
     const browser = await chromium.launch();
     const page = await browser.newPage();
 
@@ -21,10 +21,12 @@ async function run() {
     await page.waitForSelector('.easy-card-list');
 
     const boardTitle = await page.$eval('.board-name', (node) => node.innerText.trim());
-
     if (!boardTitle) {
         throw 'Board title does not exist. Please check if provided URL is correct.'
     }
+    const columns = await page.$$('.easy-card-list');
+    return {boardTitle, columns}
+}
 
     let parsedText = boardTitle + '\n\n';
 
