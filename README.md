@@ -41,6 +41,10 @@ This project accomplishes the following criteria:
   - Only content with at least 1 vote is included in the file output
 - Refactors code to adopt a functional modular approach
 
+  *Assumptions:*
+  - files will save to './funretro-export/filename.extension'
+  - the csv will contain the column title of all columns from the retrospective board, even if there are no messages which meet the requirement of at least one like for that column 
+
 ### Project Goal 
 The purpose of this project was to enable scrum masters to export the relevant content of their team's previous retrospective boards so that they can be uploaded into new retrospective boards in future meetings. 
 
