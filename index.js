@@ -3,10 +3,14 @@ const path = require('path');
 const { chromium } = require('playwright');
 const { exit } = require('process');
 
+
+function getCommandLineArgs(){
 const [url, file] = process.argv.slice(2);
 
 if (!url) {
     throw 'Please provide a URL as the first argument.';
+}
+    return {url, file}
 }
 
 async function run() {
