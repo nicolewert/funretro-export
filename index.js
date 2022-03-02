@@ -3,13 +3,17 @@ const path = require('path');
 const { chromium } = require('playwright');
 const { exit } = require('process');
 
-const [url, file] = process.argv.slice(2);
 
-if (!url) {
-    throw 'Please provide a URL as the first argument.';
+function getCommandLineArgs(){
+    const [url, file] = process.argv.slice(2);
+
+    if (!url) {
+        throw 'Please provide a URL as the first argument.';
+    }
+    return {url, file}
 }
 
-async function run() {
+async function getBoardTitleAndColumns(url){
     const browser = await chromium.launch();
     const page = await browser.newPage();
 
@@ -17,15 +21,15 @@ async function run() {
     await page.waitForSelector('.easy-card-list');
 
     const boardTitle = await page.$eval('.board-name', (node) => node.innerText.trim());
-
     if (!boardTitle) {
         throw 'Board title does not exist. Please check if provided URL is correct.'
     }
-
-    let parsedText = boardTitle + '\n\n';
-
     const columns = await page.$$('.easy-card-list');
+    return {boardTitle, columns}
+}
 
+async function processForFile(boardTitle, columns){
+    let parsedText = boardTitle + '\n\n';
     for (let i = 0; i < columns.length; i++) {
         const columnTitle = await columns[i].$eval('.column-header', (node) => node.innerText.trim());
 
@@ -63,4 +67,12 @@ function handleError(error) {
     console.error(error);
 }
 
-run().then((data) => writeToFile(file, data)).catch(handleError);
+async function createTxt(boardTitle, columns, file){
+    processForFile(boardTitle, columns)
+    .then((parsedText)=>writeToFile(file, parsedText))
+}
+
+const {url, file} = getCommandLineArgs()  
+getBoardTitleAndColumns(url)
+.then(({boardTitle, columns}) =>createTxt(boardTitle, columns, file))
+.catch(handleError)
