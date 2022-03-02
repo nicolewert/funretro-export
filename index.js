@@ -5,11 +5,11 @@ const { exit } = require('process');
 
 
 function getCommandLineArgs(){
-const [url, file] = process.argv.slice(2);
+    const [url, file] = process.argv.slice(2);
 
-if (!url) {
-    throw 'Please provide a URL as the first argument.';
-}
+    if (!url) {
+        throw 'Please provide a URL as the first argument.';
+    }
     return {url, file}
 }
 
@@ -71,3 +71,8 @@ async function createTxt(boardTitle, columns, file){
     processForFile(boardTitle, columns)
     .then((parsedText)=>writeToFile(file, parsedText))
 }
+
+const {url, file} = getCommandLineArgs()  
+getBoardTitleAndColumns(url)
+.then(({boardTitle, columns}) =>createTxt(boardTitle, columns, file))
+.catch(handleError)
