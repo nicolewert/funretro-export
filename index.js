@@ -20,7 +20,7 @@ async function getBoardTitleAndColumns(url){
     await page.goto(url);
     await page.waitForSelector('.easy-card-list');
 
-    const boardTitle = await page.$eval('.board-name', (node) => node.innerText.trim());
+    const boardTitle = await page.$eval('.board-name', (node) => node.innerText);
     if (!boardTitle) {
         throw 'Board title does not exist. Please check if provided URL is correct.'
     }
@@ -29,7 +29,7 @@ async function getBoardTitleAndColumns(url){
 }
 
 async function processForFile(boardTitle, columns){
-    let parsedText = boardTitle + '\n\n';
+    let parsedText = boardTitle.trim() + '\n\n';
     for (let i = 0; i < columns.length; i++) {
         const columnTitle = await columns[i].$eval('.column-header', (node) => node.innerText.trim());
 
