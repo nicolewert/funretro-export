@@ -121,12 +121,17 @@ function handleError(error) {
     console.error(error);
 }
 
-async function createTxt(boardTitle, columns, file){
-    processForFile(boardTitle, columns)
-    .then((parsedText)=>writeToFile(file, parsedText))
-}
+//MAIN
+const {url, file} = getCommandLineArgs() 
 
-const {url, file} = getCommandLineArgs()  
 getBoardTitleAndColumns(url)
-.then(({boardTitle, columns}) =>createTxt(boardTitle, columns, file))
+.then(({boardTitle, columns}) =>{
+    if(file !==undefined && file.toUpperCase()==="CSV"){
+        processForCSV(boardTitle, columns)
+        .then(({boardTitle, parsedText})=>writeToCSV(boardTitle, parsedText))
+    }else{
+        processForFile(boardTitle, columns)
+        .then((parsedText)=>writeToFile(file, parsedText))
+    }
+})
 .catch(handleError)
