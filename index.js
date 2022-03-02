@@ -28,7 +28,9 @@ async function getBoardTitleAndColumns(url){
     return {boardTitle, columns}
 }
 
-async function processForFile(boardTitle, columns){
+async function processForFile(boardTitle, columns, file){
+    const filePath = file !==undefined? file:`${parsedText.split('\n')[0].replace('/', '')}.txt`
+     
     let parsedText = boardTitle.trim() + '\n\n';
     for (let i = 0; i < columns.length; i++) {
         const columnTitle = await columns[i].$eval('.column-header', (node) => node.innerText.trim());
@@ -47,12 +49,13 @@ async function processForFile(boardTitle, columns){
             parsedText += '\n';
         }
     }
-
-    return parsedText;
+    return {filePath, parsedText};
 }
 
 async function processForCSV(boardTitle, columns){
     boardTitle = boardTitle.split(" ").join("")
+    const filePath = `${boardTitle}.csv`
+
     let parsedText =""
     const messagesByCol = []
     let longestArray = 0 
@@ -89,24 +92,12 @@ async function processForCSV(boardTitle, columns){
         row = row.join(",")
         parsedText += (row +"\n")
     }
-    return {boardTitle, parsedText}
-    
+
+    return {filePath, parsedText} 
 }
 
 function writeToFile(filePath, data) {
-    const resolvedPath = path.resolve(filePath || `../${data.split('\n')[0].replace('/', '')}.txt`);
-    fs.writeFile(resolvedPath, data, (error) => {
-        if (error) {
-            throw error;
-        } else {
-            console.log(`Successfully written to file at: ${resolvedPath}`);
-        }
-        process.exit();
-    });
-}
-
-function writeToCSV(boardTitle, data){
-    const resolvedPath= path.resolve(`../${boardTitle}.csv`);
+    const resolvedPath = path.resolve(filePath);
     fs.writeFile(resolvedPath, data, (error) => {
         if (error) {
             throw error;
@@ -127,11 +118,10 @@ const {url, file} = getCommandLineArgs()
 getBoardTitleAndColumns(url)
 .then(({boardTitle, columns}) =>{
     if(file !==undefined && file.toUpperCase()==="CSV"){
-        processForCSV(boardTitle, columns)
-        .then(({boardTitle, parsedText})=>writeToCSV(boardTitle, parsedText))
+        return processForCSV(boardTitle, columns)
     }else{
-        processForFile(boardTitle, columns)
-        .then((parsedText)=>writeToFile(file, parsedText))
+        return processForFile(boardTitle, columns, file)
     }
 })
+.then(({filePath, parsedText})=>{writeToFile(filePath, parsedText)})
 .catch(handleError)
