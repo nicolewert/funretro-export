@@ -105,6 +105,18 @@ function writeToFile(filePath, data) {
     });
 }
 
+function writeToCSV(boardTitle, data){
+    const resolvedPath= path.resolve(`../${boardTitle}.csv`);
+    fs.writeFile(resolvedPath, data, (error) => {
+        if (error) {
+            throw error;
+        } else {
+            console.log(`Successfully written to file at: ${resolvedPath}`);
+        }
+        process.exit();
+    });
+}
+
 function handleError(error) {
     console.error(error);
 }
