@@ -67,4 +67,7 @@ function handleError(error) {
     console.error(error);
 }
 
-run().then((data) => writeToFile(file, data)).catch(handleError);
+async function createTxt(boardTitle, columns, file){
+    processForFile(boardTitle, columns)
+    .then((parsedText)=>writeToFile(file, parsedText))
+}
